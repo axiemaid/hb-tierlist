@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyper Battle Tier List</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 2px solid #333;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header img {
+  width: 40px;
+  height: auto;
+  border-radius: 4px;
+  border: 2px solid #5a3a1a;
+}
+
+.header input {
+  background: #1a1a2e;
+  border: 1px solid #444;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  flex: 1;
+  max-width: 500px;
+}
+
+.header input:focus { outline: none; border-color: #b22222; }
+
+.header .actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.header button {
+  background: #b22222;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.header button:hover { background: #d32f2f; }
+.header button.secondary { background: #333; }
+.header button.secondary:hover { background: #444; }
+
+/* Main layout */
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+
+/* Tier list */
+.tier-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.tier-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 120px;
+  border-bottom: 1px solid #333;
+}
+
+.tier-label {
+  width: 80px;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.tier-label:hover::after {
+  content: '✏️';
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 14px;
+}
+
+.tier-label input {
+  width: 50px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
+  border-radius: 4px;
+}
+
+.tier-content {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(255,255,255,0.03);
+  min-height: 120px;
+  transition: background 0.15s;
+}
+
+.tier-content.drag-over {
+  background: rgba(178,34,34,0.15);
+}
+
+/* Tier colors */
+.tier-s { background: #ff6b6b; }
+.tier-a { background: #ff9f43; }
+.tier-b { background: #feca57; }
+.tier-c { background: #48dbfb; }
+.tier-d { background: #54a0ff; }
+.tier-e { background: #5f27cd; }
+.tier-f { background: #222; }
+
+/* Card pool */
+.pool-section {
+  background: #111;
+  border-top: 2px solid #333;
+  padding: 16px 24px;
+}
+
+.pool-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pool-header h2 {
+  font-size: 18px;
+  color: #888;
+  font-weight: 700;
+}
+
+.pool-header .count {
+  background: #333;
+  color: #fff;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pool-header .pool-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.pool-header button {
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pool-header button:hover { background: #444; }
+
+.card-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 200px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+}
+
+.card-pool.drag-over {
+  background: rgba(178,34,34,0.1);
+}
+
+/* Cards */
+.card {
+  width: 80px;
+  height: 117px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: grab;
+  position: relative;
+  border: 2px solid transparent;
+  transition: transform 0.1s, border-color 0.1s;
+  flex-shrink: 0;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.card.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.card .card-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 8px;
+  text-align: center;
+  padding: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Capture container */
+.capture-container {
+  background: #0a0a0a;
+  padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header { flex-wrap: wrap; }
+  .header input { width: 100%; max-width: none; }
+  .tier-label { width: 50px; font-size: 24px; }
+  .card { width: 60px; height: 88px; }
+  .header button { padding: 8px 12px; font-size: 12px; }
+}
+
+/* Hidden during capture */
+.hide-on-capture { display: none !important; }
+
+/* Caption */
+.capture-caption {
+  text-align: center;
+  padding: 12px;
+  font-size: 14px;
+  color: #888;
+  font-weight: 700;
+  background: #0a0a0a;
+  border-top: 1px solid #222;
+}
+</style>
+</head>
+<body>
+
+<div class="header" id="header">
+  <img src="back.png" alt="logo">
+  <input type="text" id="title" value="My Hyper Battle Tier List" placeholder="Tier list title...">
+  <div class="actions">
+    <button onclick="downloadImage()">📷 Download PNG</button>
+    <button class="secondary" onclick="resetTiers()">Reset</button>
+    <button class="secondary" onclick="autoFillByPrice()">Auto-fill by price</button>
+  </div>
+</div>
+
+<div class="main capture-container" id="captureArea">
+  <div class="tier-list" id="tierList"></div>
+  <div class="capture-caption" id="caption">hyperbattle.vercel.app</div>
+</div>
+
+<div class="pool-section hide-on-capture" id="poolSection">
+  <div class="pool-header">
+    <h2>Card Pool</h2>
+    <span class="count" id="poolCount">0</span>
+    <div class="pool-actions">
+      <button onclick="sortBy('id')">Sort by ID</button>
+      <button onclick="sortBy('name')">Sort by name</button>
+    </div>
+  </div>
+  <div class="card-pool" id="cardPool"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const TIERS = [
+  { label: 'S', class: 'tier-s' },
+  { label: 'A', class: 'tier-a' },
+  { label: 'B', class: 'tier-b' },
+  { label: 'C', class: 'tier-c' },
+  { label: 'D', class: 'tier-d' },
+  { label: 'E', class: 'tier-e' },
+  { label: 'F', class: 'tier-f' },
+];
+
+let cards = [];
+let cardLocations = {}; // cardId -> { tier: index, order: n } or { pool: true }
+let draggedCardId = null;
+
+async function init() {
+  const res = await fetch('cards.json');
+  cards = await res.json();
+  
+  buildTiers();
+  buildPool();
+}
+
+function buildTiers() {
+  const list = document.getElementById('tierList');
+  list.innerHTML = '';
+  TIERS.forEach((tier, i) => {
+    const row = document.createElement('div');
+    row.className = 'tier-row';
+    row.innerHTML = `
+      <div class="tier-label ${tier.class}" data-tier="${i}" onclick="editLabel(this)">${tier.label}</div>
+      <div class="tier-content" data-tier="${i}" ondragover="onDragOver(event, this)" ondragleave="onDragLeave(event, this)" ondrop="onDrop(event, this)"></div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function editLabel(el) {
+  const current = el.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = current;
+  input.maxLength = 3;
+  el.innerHTML = '';
+  el.appendChild(input);
+  input.focus();
+  input.select();
+  
+  const save = () => {
+    const val = input.value.trim() || current;
+    TIERS[parseInt(el.dataset.tier)].label = val;
+    el.innerHTML = val;
+  };
+  
+  input.onblur = save;
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); save(); }
+    if (e.key === 'Escape') { el.innerHTML = current; }
+  };
+}
+
+function buildPool() {
+  const pool = document.getElementById('cardPool');
+  pool.innerHTML = '';
+  
+  const poolCards = cards.filter(c => !cardLocations[c.id]);
+  poolCards.forEach(c => {
+    const el = createCardEl(c);
+    pool.appendChild(el);
+  });
+  
+  updatePoolCount();
+}
+
+function createCardEl(card) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.draggable = true;
+  el.dataset.cardId = card.id;
+  el.innerHTML = `<img src="${card.image}" alt="${card.id}" loading="lazy"><div class="card-name">${card.name}</div>`;
+  
+  el.addEventListener('dragstart', (e) => {
+    draggedCardId = card.id;
+    el.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  
+  el.addEventListener('dragend', () => {
+    el.classList.remove('dragging');
+    draggedCardId = null;
+  });
+  
+  return el;
+}
+
+function onDragOver(e, el) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  el.classList.add('drag-over');
+}
+
+function onDragLeave(e, el) {
+  el.classList.remove('drag-over');
+}
+
+function onDrop(e, el) {
+  e.preventDefault();
+  el.classList.remove('drag-over');
+  
+  if (!draggedCardId) return;
+  
+  const card = cards.find(c => c.id === draggedCardId);
+  if (!card) return;
+  
+  // Remove from old location
+  const oldEl = document.querySelector(`.card[data-card-id="${draggedCardId}"]`);
+  if (oldEl) oldEl.remove();
+  
+  // Insert into new location at drop position
+  const newEl = createCardEl(card);
+  
+  // Find insertion point based on mouse X
+  const afterElement = getDragAfterElement(el, e.clientX);
+  if (afterElement) {
+    el.insertBefore(newEl, afterElement);
+  } else {
+    el.appendChild(newEl);
+  }
+  
+  // Return any displaced cards to pool
+  syncPool();
+  updatePoolCount();
+}
+
+function getDragAfterElement(container, x) {
+  const cards = [...container.querySelectorAll('.card:not(.dragging)')];
+  return cards.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = x - box.left - box.width / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    }
+    return closest;
+  }, { offset: -Infinity }).element;
+}
+
+function syncPool() {
+  // Find cards in tiers that shouldn't be there (empty handling)
+  // Also return cards to pool if dragged out of a tier back to pool
+  const poolEl = document.getElementById('cardPool');
+  
+  // Get all cards currently in tiers
+  const inTiers = new Set();
+  document.querySelectorAll('.tier-content .card').forEach(el => {
+    inTiers.add(el.dataset.cardId);
+  });
+  
+  // Get cards in pool
+  const inPool = new Set();
+  poolEl.querySelectorAll('.card').forEach(el => {
+    inPool.add(el.dataset.cardId);
+  });
+  
+  // Find cards that are neither in tiers nor pool (orphaned) -> return to pool
+  cards.forEach(c => {
+    if (!inTiers.has(c.id) && !inPool.has(c.id)) {
+      poolEl.appendChild(createCardEl(c));
+    }
+  });
+}
+
+// Allow dropping back into pool
+document.addEventListener('DOMContentLoaded', () => {
+  const pool = document.getElementById('cardPool');
+  pool.addEventListener('dragover', (e) => { e.preventDefault(); pool.classList.add('drag-over'); });
+  pool.addEventListener('dragleave', () => { pool.classList.remove('drag-over'); });
+  pool.addEventListener('drop', (e) => {
+    e.preventDefault();
+    pool.classList.remove('drag-over');
+    if (!draggedCardId) return;
+    const card = cards.find(c => c.id === draggedCardId);
+    if (!card) return;
+    const oldEl = document.querySelector(`.card[data-card-id="${draggedCardId}"]`);
+    if (oldEl) oldEl.remove();
+    const newEl = createCardEl(card);
+    const afterElement = getDragAfterElement(pool, e.clientX);
+    if (afterElement) {
+      pool.insertBefore(newEl, afterElement);
+    } else {
+      pool.appendChild(newEl);
+    }
+    updatePoolCount();
+  });
+});
+
+function updatePoolCount() {
+  const count = document.getElementById('cardPool').querySelectorAll('.card').length;
+  document.getElementById('poolCount').textContent = count + ' remaining';
+}
+
+function resetTiers() {
+  document.querySelectorAll('.tier-content').forEach(el => el.innerHTML = '');
+  buildPool();
+}
+
+function sortBy(key) {
+  const pool = document.getElementById('cardPool');
+  const poolCards = cards.filter(c => {
+    const el = pool.querySelector(`.card[data-card-id="${c.id}"]`);
+    return el !== null;
+  });
+  
+  poolCards.sort((a, b) => {
+    if (key === 'name') return a.name.localeCompare(b.name);
+    return a.id.localeCompare(b.id);
+  });
+  
+  pool.innerHTML = '';
+  poolCards.forEach(c => pool.appendChild(createCardEl(c)));
+}
+
+function autoFillByPrice() {
+  // Sort cards by price descending and distribute into tiers
+  const sorted = [...cards].sort((a, b) => (b.price || 0) - (a.price || 0));
+  
+  // Price thresholds for tiers (S=100k+, A=30k+, B=10k+, C=5k+, D=2k+, E=1k+, F=<1k)
+  const thresholds = [100000, 30000, 10000, 5000, 2000, 1000, 0];
+  
+  resetTiers();
+  
+  sorted.forEach(card => {
+    let tierIdx = TIERS.length - 1;
+    for (let i = 0; i < thresholds.length; i++) {
+      if ((card.price || 0) >= thresholds[i]) {
+        tierIdx = i;
+        break;
+      }
+    }
+    const tierEl = document.querySelector(`.tier-content[data-tier="${tierIdx}"]`);
+    tierEl.appendChild(createCardEl(card));
+  });
+  
+  syncPool();
+  updatePoolCount();
+}
+
+async function downloadImage() {
+  const header = document.getElementById('header');
+  const poolSection = document.getElementById('poolSection');
+  const caption = document.getElementById('caption');
+  
+  header.classList.add('hide-on-capture');
+  poolSection.classList.add('hide-on-capture');
+  caption.classList.remove('hide-on-capture');
+  
+  // Ensure caption is visible during capture
+  caption.style.display = 'block';
+  
+  const area = document.getElementById('captureArea');
+  
+  try {
+    const canvas = await html2canvas(area, {
+      backgroundColor: '#0a0a0a',
+      scale: 2,
+      useCORS: true,
+    });
+    
+    const link = document.createElement('a');
+    const title = document.getElementById('title').value || 'tier-list';
+    link.download = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch (err) {
+    alert('Failed to capture: ' + err.message);
+  } finally {
+    header.classList.remove('hide-on-capture');
+    poolSection.classList.remove('hide-on-capture');
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>

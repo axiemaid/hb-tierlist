@@ -1,0 +1,296 @@
+[
+  {
+    "id": "c01",
+    "name": "Luffy",
+    "title": "Future Pirate King",
+    "image": "c01.png",
+    "price": 552000
+  },
+  {
+    "id": "c02",
+    "name": "Luffy",
+    "title": "Gomu Gomu no Pistol",
+    "image": "c02.png",
+    "price": 9200
+  },
+  {
+    "id": "c03",
+    "name": "Luffy",
+    "title": "Gomu Gomu no Whip",
+    "image": "c03.png",
+    "price": 5200
+  },
+  {
+    "id": "c04",
+    "name": "Luffy",
+    "title": "Aspiring Pirate",
+    "image": "c04.png",
+    "price": 16900
+  },
+  {
+    "id": "c05",
+    "name": "Luffy's Hat",
+    "title": "Straw Hat",
+    "image": "c05.png",
+    "price": 10500
+  },
+  {
+    "id": "c06",
+    "name": "Zoro",
+    "title": "The Difference in Status",
+    "image": "c06.png",
+    "price": 15500
+  },
+  {
+    "id": "c07",
+    "name": "Zoro",
+    "title": "Onigiri",
+    "image": "c07.png",
+    "price": 102800
+  },
+  {
+    "id": "c08",
+    "name": "Zoro",
+    "title": "Vow to Kuina",
+    "image": "c08.png",
+    "price": 8200
+  },
+  {
+    "id": "c09",
+    "name": "Nami",
+    "title": "Little Devil",
+    "image": "c09.png",
+    "price": 6800
+  },
+  {
+    "id": "c10",
+    "name": "Nami",
+    "title": "Risk Perception",
+    "image": "c10.png",
+    "price": 8500
+  },
+  {
+    "id": "c11",
+    "name": "Nami",
+    "title": "B\u014djutsu",
+    "image": "c11.png",
+    "price": 7000
+  },
+  {
+    "id": "c12",
+    "name": "Usopp",
+    "title": "Lead Star",
+    "image": "c12.png",
+    "price": 2100
+  },
+  {
+    "id": "c13",
+    "name": "Usopp",
+    "title": "Caltrop Hell",
+    "image": "c13.png",
+    "price": 2700
+  },
+  {
+    "id": "c14",
+    "name": "Shanks",
+    "title": "Noble Friendship",
+    "image": "c14.png",
+    "price": 41200
+  },
+  {
+    "id": "c15",
+    "name": "Beckman",
+    "title": "The Capable First Mate",
+    "image": "c15.png",
+    "price": 1500
+  },
+  {
+    "id": "c16",
+    "name": "Kuina",
+    "title": "Qualities of a Swordsman",
+    "image": "c16.png",
+    "price": 1400
+  },
+  {
+    "id": "c17",
+    "name": "Koby",
+    "title": "Dream of Being a Marine",
+    "image": "c17.png",
+    "price": 1400
+  },
+  {
+    "id": "c18",
+    "name": "Rika",
+    "title": "Onigiri",
+    "image": "c18.png",
+    "price": 1200
+  },
+  {
+    "id": "c19",
+    "name": "Boodle",
+    "title": "Affection for the Town",
+    "image": "c19.png",
+    "price": 1300
+  },
+  {
+    "id": "c20",
+    "name": "Chouchou",
+    "title": "Loyal Dog",
+    "image": "c20.png",
+    "price": 1500
+  },
+  {
+    "id": "c21",
+    "name": "Alvida",
+    "title": "Fastidious Person",
+    "image": "c21.png",
+    "price": 2000
+  },
+  {
+    "id": "c22",
+    "name": "Morgan",
+    "title": "Authority",
+    "image": "c22.png",
+    "price": 1400
+  },
+  {
+    "id": "c23",
+    "name": "Helmeppo",
+    "title": "Empty Promise",
+    "image": "c23.png",
+    "price": 1500
+  },
+  {
+    "id": "c24",
+    "name": "Buggy",
+    "title": "Obsession with Treasure",
+    "image": "c24.png",
+    "price": 48900
+  },
+  {
+    "id": "c25",
+    "name": "Buggy",
+    "title": "Bara Bara Kinkyu Dasshutsu",
+    "image": "c25.png",
+    "price": 2500
+  },
+  {
+    "id": "c26",
+    "name": "Buggy Cannon",
+    "title": "Cannon",
+    "image": "c26.png",
+    "price": 2000
+  },
+  {
+    "id": "c27",
+    "name": "Mohji",
+    "title": "Beast Tamer",
+    "image": "c27.png",
+    "price": 1200
+  },
+  {
+    "id": "c28",
+    "name": "Richie",
+    "title": "Lion's Onslaught",
+    "image": "c28.png",
+    "price": 900
+  },
+  {
+    "id": "c29",
+    "name": "Cabaji",
+    "title": "Theater of One HundredKamikaze Tops",
+    "image": "c29.png",
+    "price": 1500
+  },
+  {
+    "id": "c30",
+    "name": "Lord of the Coast",
+    "title": "Dragon's Fang",
+    "image": "c30.png",
+    "price": 1500
+  },
+  {
+    "id": "c31",
+    "name": "Alvida Crew",
+    "title": "Loyalty to the Goddess",
+    "image": "c31.png",
+    "price": 1000
+  },
+  {
+    "id": "c32",
+    "name": "Morgan Troops",
+    "title": "Complete Submission",
+    "image": "c32.png",
+    "price": 1200
+  },
+  {
+    "id": "c33",
+    "name": "Buggy Crew",
+    "title": "Flashy Combat",
+    "image": "c33.png",
+    "price": 1800
+  },
+  {
+    "id": "c34",
+    "name": "Red Hair Pirates",
+    "title": "Brave Men of the Sea",
+    "image": "c34.png",
+    "price": 2400
+  },
+  {
+    "id": "s01",
+    "name": "Luffy Pirates",
+    "title": "Pirate's Party",
+    "image": "s01.png",
+    "price": 72000
+  },
+  {
+    "id": "s02",
+    "name": "Luffy",
+    "title": "Qualities of a Captain",
+    "image": "s02.png",
+    "price": 9000
+  },
+  {
+    "id": "s03",
+    "name": "Gomu Gomu no Mi",
+    "title": "Devil Fruit",
+    "image": "s03.png",
+    "price": 11300
+  },
+  {
+    "id": "s04",
+    "name": "Zoro",
+    "title": "Sant\u014dry\u016b",
+    "image": "s04.png",
+    "price": 6500
+  },
+  {
+    "id": "s05",
+    "name": "Nami",
+    "title": "Pirate Thief",
+    "image": "s05.png",
+    "price": 70900
+  },
+  {
+    "id": "s06",
+    "name": "Shanks",
+    "title": "Hero's Lunch",
+    "image": "s06.png",
+    "price": 4100
+  },
+  {
+    "id": "s07",
+    "name": "Morgan",
+    "title": "Captains Title",
+    "image": "s07.png",
+    "price": 1000
+  },
+  {
+    "id": "s08",
+    "name": "Buggy",
+    "title": "Bara Bara Festival",
+    "image": "s08.png",
+    "price": 1200
+  }
+]
