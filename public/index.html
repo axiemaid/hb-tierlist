@@ -311,9 +311,8 @@ body {
   <img src="back.png" alt="logo">
   <input type="text" id="title" value="My Hyper Battle Tier List" placeholder="Tier list title...">
   <div class="actions">
-    <button onclick="downloadImage()">📷 Download PNG</button>
+    <button onclick="downloadImage()">📷 Save as PNG</button>
     <button class="secondary" onclick="resetTiers()">Reset</button>
-    <button class="secondary" onclick="autoFillByPrice()">Auto-fill by price</button>
   </div>
 </div>
 
@@ -321,10 +320,6 @@ body {
   <div class="pool-header">
     <h2>Card Pool</h2>
     <span class="count" id="poolCount">0</span>
-    <div class="pool-actions">
-      <button onclick="sortBy('id')">Sort by ID</button>
-      <button onclick="sortBy('name')">Sort by name</button>
-    </div>
   </div>
   <div class="card-pool" id="cardPool"></div>
 </div>
@@ -537,47 +532,6 @@ function updatePoolCount() {
 function resetTiers() {
   document.querySelectorAll('.tier-content').forEach(el => el.innerHTML = '');
   buildPool();
-}
-
-function sortBy(key) {
-  const pool = document.getElementById('cardPool');
-  const poolCards = cards.filter(c => {
-    const el = pool.querySelector(`.card[data-card-id="${c.id}"]`);
-    return el !== null;
-  });
-  
-  poolCards.sort((a, b) => {
-    if (key === 'name') return a.name.localeCompare(b.name);
-    return a.id.localeCompare(b.id);
-  });
-  
-  pool.innerHTML = '';
-  poolCards.forEach(c => pool.appendChild(createCardEl(c)));
-}
-
-function autoFillByPrice() {
-  // Sort cards by price descending and distribute into tiers
-  const sorted = [...cards].sort((a, b) => (b.price || 0) - (a.price || 0));
-  
-  // Price thresholds for tiers (S=100k+, A=30k+, B=10k+, C=5k+, D=2k+, F=<2k)
-  const thresholds = [100000, 30000, 10000, 5000, 2000, 0];
-  
-  resetTiers();
-  
-  sorted.forEach(card => {
-    let tierIdx = TIERS.length - 1;
-    for (let i = 0; i < thresholds.length; i++) {
-      if ((card.price || 0) >= thresholds[i]) {
-        tierIdx = i;
-        break;
-      }
-    }
-    const tierEl = document.querySelector(`.tier-content[data-tier="${tierIdx}"]`);
-    tierEl.appendChild(createCardEl(card));
-  });
-  
-  syncPool();
-  updatePoolCount();
 }
 
 async function downloadImage() {
