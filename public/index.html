@@ -541,53 +541,47 @@ async function downloadImage() {
   const area = document.getElementById('captureArea');
   
   // Compute min width: 5 cards + gaps + padding + tier-label width
-  const cardW = 90; // matches .card width (desktop)
-  const cardGap = 6; // matches .tier-content gap
-  const tierPadding = 8; // matches .tier-content padding (left+right=16)
-  const labelW = 80; // matches .tier-label width
+  const cardW = 90;
+  const cardGap = 6;
+  const tierPadding = 8;
+  const labelW = 80;
   const minCards = 5;
   const minWidth = labelW + tierPadding * 2 + minCards * cardW + (minCards - 1) * cardGap;
   
-  // Hide the entire page while manipulating layout + capturing
-  document.body.style.visibility = 'hidden';
+  // Clone the capture area to an off-screen container so we can
+  // manipulate layout without any visible flicker on the real page
+  const cloneWrap = document.createElement('div');
+  cloneWrap.style.cssText = 'position:absolute;left:-99999px;top:0;width:auto;';
+  const clone = area.cloneNode(true);
+  clone.style.width = 'fit-content';
+  clone.style.minWidth = minWidth + 'px';
   
-  header.classList.add('hide-on-capture');
-  poolSection.classList.add('hide-on-capture');
-  caption.classList.remove('hide-on-capture');
-  caption.style.display = 'block';
-  
-  // Set tier-content to shrink-fit content, with min width for 5 cards
-  const tierContents = area.querySelectorAll('.tier-content');
-  const origStyles = [];
-  tierContents.forEach(el => {
-    origStyles.push(el.style.width);
+  // Shrink tier contents in the clone
+  clone.querySelectorAll('.tier-content').forEach(el => {
     el.style.width = 'fit-content';
     el.style.minWidth = minWidth + 'px';
     el.style.flex = 'none';
   });
   
-  // Also shrink the capture area to fit content
-  const origAreaWidth = area.style.width;
-  area.style.width = 'fit-content';
-  area.style.minWidth = minWidth + 'px';
+  // Show caption in the clone (normally hidden)
+  const cloneCaption = clone.querySelector('#caption');
+  if (cloneCaption) {
+    cloneCaption.classList.remove('hide-on-capture');
+    cloneCaption.style.display = 'block';
+  }
+  
+  cloneWrap.appendChild(clone);
+  document.body.appendChild(cloneWrap);
   
   // Let layout settle
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
-    const canvas = await html2canvas(area, {
+    const canvas = await html2canvas(clone, {
       backgroundColor: '#0a0a0a',
       scale: 2,
       useCORS: true,
     });
-    
-    // Restore styles first, then show overlay
-    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
-    area.style.width = origAreaWidth;
-    area.style.minWidth = '';
-    header.classList.remove('hide-on-capture');
-    poolSection.classList.remove('hide-on-capture');
-    document.body.style.visibility = '';
     
     // Use blob URL (not data URL) so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
@@ -596,10 +590,9 @@ async function downloadImage() {
     }, 'image/png');
     
   } catch (err) {
-    document.body.style.visibility = '';
-    header.classList.remove('hide-on-capture');
-    poolSection.classList.remove('hide-on-capture');
     alert('Failed to capture: ' + err.message);
+  } finally {
+    cloneWrap.remove();
   }
 }
 
