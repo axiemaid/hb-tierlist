@@ -601,6 +601,7 @@ async function downloadImage() {
     poolSection.classList.remove('hide-on-capture');
     alert('Failed to capture: ' + err.message);
   }
+}
 
 // Show the generated PNG as an overlay. Uses blob: URL so the image is
 // right-click savable in all browsers (data: URLs often aren't).
