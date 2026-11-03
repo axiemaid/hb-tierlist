@@ -155,14 +155,18 @@ body {
 .pool-section {
   background: #111;
   border-top: 2px solid #333;
-  padding: 16px 24px;
+  border-bottom: 2px solid #333;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
 }
 
 .pool-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .pool-header h2 {
@@ -200,13 +204,21 @@ body {
 
 .card-pool {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  min-height: 200px;
-  padding: 12px;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 4px;
   background: rgba(255,255,255,0.02);
   border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #444 #222;
 }
+
+.card-pool::-webkit-scrollbar { height: 6px; }
+.card-pool::-webkit-scrollbar-track { background: #222; border-radius: 3px; }
+.card-pool::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
 
 .card-pool.drag-over {
   background: rgba(178,34,34,0.1);
@@ -214,8 +226,8 @@ body {
 
 /* Cards */
 .card {
-  width: 80px;
-  height: 117px;
+  width: 90px;
+  height: 132px;
   border-radius: 6px;
   overflow: hidden;
   cursor: grab;
@@ -266,11 +278,16 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .header { flex-wrap: wrap; }
+  .header { flex-wrap: wrap; padding: 12px 16px; position: relative; }
   .header input { width: 100%; max-width: none; }
   .tier-label { width: 50px; font-size: 24px; }
-  .card { width: 60px; height: 88px; }
+  .card { width: 72px; height: 105px; }
   .header button { padding: 8px 12px; font-size: 12px; }
+  .pool-section { padding: 10px 12px; }
+  .card-pool { gap: 4px; padding: 6px 2px; }
+  .pool-header { gap: 8px; margin-bottom: 6px; }
+  .pool-header h2 { font-size: 15px; }
+  .pool-header button { padding: 4px 10px; font-size: 11px; }
 }
 
 /* Hidden during capture */
@@ -300,12 +317,7 @@ body {
   </div>
 </div>
 
-<div class="main capture-container" id="captureArea">
-  <div class="tier-list" id="tierList"></div>
-  <div class="capture-caption" id="caption">hyperbattle.vercel.app</div>
-</div>
-
-<div class="pool-section hide-on-capture" id="poolSection">
+<div class="pool-section" id="poolSection">
   <div class="pool-header">
     <h2>Card Pool</h2>
     <span class="count" id="poolCount">0</span>
@@ -317,6 +329,11 @@ body {
   <div class="card-pool" id="cardPool"></div>
 </div>
 
+<div class="main capture-container" id="captureArea">
+  <div class="tier-list" id="tierList"></div>
+  <div class="capture-caption" id="caption">hyperbattle.vercel.app</div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 const TIERS = [
@@ -325,7 +342,6 @@ const TIERS = [
   { label: 'B', class: 'tier-b' },
   { label: 'C', class: 'tier-c' },
   { label: 'D', class: 'tier-d' },
-  { label: 'E', class: 'tier-e' },
   { label: 'F', class: 'tier-f' },
 ];
 
@@ -397,7 +413,7 @@ function createCardEl(card) {
   el.className = 'card';
   el.draggable = true;
   el.dataset.cardId = card.id;
-  el.innerHTML = `<img src="${card.image}" alt="${card.id}" loading="lazy"><div class="card-name">${card.name}</div>`;
+  el.innerHTML = `<img src="${card.image}" alt="${card.id}" loading="lazy">`;
   
   el.addEventListener('dragstart', (e) => {
     draggedCardId = card.id;
@@ -543,8 +559,8 @@ function autoFillByPrice() {
   // Sort cards by price descending and distribute into tiers
   const sorted = [...cards].sort((a, b) => (b.price || 0) - (a.price || 0));
   
-  // Price thresholds for tiers (S=100k+, A=30k+, B=10k+, C=5k+, D=2k+, E=1k+, F=<1k)
-  const thresholds = [100000, 30000, 10000, 5000, 2000, 1000, 0];
+  // Price thresholds for tiers (S=100k+, A=30k+, B=10k+, C=5k+, D=2k+, F=<2k)
+  const thresholds = [100000, 30000, 10000, 5000, 2000, 0];
   
   resetTiers();
   
@@ -572,11 +588,35 @@ async function downloadImage() {
   header.classList.add('hide-on-capture');
   poolSection.classList.add('hide-on-capture');
   caption.classList.remove('hide-on-capture');
-  
-  // Ensure caption is visible during capture
   caption.style.display = 'block';
   
   const area = document.getElementById('captureArea');
+  
+  // Compute min width: 5 cards + gaps + padding + tier-label width
+  const cardW = 90; // matches .card width (desktop)
+  const cardGap = 6; // matches .tier-content gap
+  const tierPadding = 8; // matches .tier-content padding (left+right=16)
+  const labelW = 80; // matches .tier-label width
+  const minCards = 5;
+  const minWidth = labelW + tierPadding * 2 + minCards * cardW + (minCards - 1) * cardGap;
+  
+  // Set tier-content to shrink-fit content, with min width for 5 cards
+  const tierContents = area.querySelectorAll('.tier-content');
+  const origStyles = [];
+  tierContents.forEach(el => {
+    origStyles.push(el.style.width);
+    el.style.width = 'fit-content';
+    el.style.minWidth = minWidth + 'px';
+    el.style.flex = 'none';
+  });
+  
+  // Also shrink the capture area to fit content
+  const origAreaWidth = area.style.width;
+  area.style.width = 'fit-content';
+  area.style.minWidth = minWidth + 'px';
+  
+  // Let layout settle
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
     const canvas = await html2canvas(area, {
@@ -585,17 +625,47 @@ async function downloadImage() {
       useCORS: true,
     });
     
-    const link = document.createElement('a');
-    const title = document.getElementById('title').value || 'tier-list';
-    link.download = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    const dataUrl = canvas.toDataURL('image/png');
+    showPreview(dataUrl);
   } catch (err) {
     alert('Failed to capture: ' + err.message);
   } finally {
+    // Restore styles
+    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
   }
+}
+
+function showPreview(dataUrl) {
+  // Open preview in a new tab so the original page stays intact
+  const w = window.open('', '_blank');
+  if (!w) {
+    // Popup blocked — fall back to download link in current page
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'tier-list.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    return;
+  }
+  w.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head><title>Tier List Preview</title></head>
+    <body style="margin:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
+      <div style="margin-bottom:16px;">
+        <button onclick="window.close()" style="background:#b22222;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;">← Close</button>
+        <a href="${dataUrl}" download="tier-list.png" style="background:#4ecca3;color:#16213e;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;margin-left:8px;">⬇ Download PNG</a>
+      </div>
+      <img src="${dataUrl}" alt="Tier List" style="max-width:90vw;max-height:80vh;width:auto;height:auto;object-fit:contain;border-radius:8px;cursor:default;">
+    </body>
+    </html>
+  `);
+  w.document.close();
 }
 
 init();
