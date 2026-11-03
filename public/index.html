@@ -538,12 +538,6 @@ async function downloadImage() {
   const header = document.getElementById('header');
   const poolSection = document.getElementById('poolSection');
   const caption = document.getElementById('caption');
-  
-  header.classList.add('hide-on-capture');
-  poolSection.classList.add('hide-on-capture');
-  caption.classList.remove('hide-on-capture');
-  caption.style.display = 'block';
-  
   const area = document.getElementById('captureArea');
   
   // Compute min width: 5 cards + gaps + padding + tier-label width
@@ -553,6 +547,14 @@ async function downloadImage() {
   const labelW = 80; // matches .tier-label width
   const minCards = 5;
   const minWidth = labelW + tierPadding * 2 + minCards * cardW + (minCards - 1) * cardGap;
+  
+  // Hide the entire page while manipulating layout + capturing
+  document.body.style.visibility = 'hidden';
+  
+  header.classList.add('hide-on-capture');
+  poolSection.classList.add('hide-on-capture');
+  caption.classList.remove('hide-on-capture');
+  caption.style.display = 'block';
   
   // Set tier-content to shrink-fit content, with min width for 5 cards
   const tierContents = area.querySelectorAll('.tier-content');
@@ -579,6 +581,14 @@ async function downloadImage() {
       useCORS: true,
     });
     
+    // Restore styles first, then show overlay
+    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
+    header.classList.remove('hide-on-capture');
+    poolSection.classList.remove('hide-on-capture');
+    document.body.style.visibility = '';
+    
     // Use blob URL (not data URL) so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
       const imgUrl = URL.createObjectURL(blob);
@@ -586,16 +596,11 @@ async function downloadImage() {
     }, 'image/png');
     
   } catch (err) {
-    alert('Failed to capture: ' + err.message);
-  } finally {
-    // Restore styles
-    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
-    area.style.width = origAreaWidth;
-    area.style.minWidth = '';
+    document.body.style.visibility = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
+    alert('Failed to capture: ' + err.message);
   }
-}
 
 // Show the generated PNG as an overlay. Uses blob: URL so the image is
 // right-click savable in all browsers (data: URLs often aren't).
