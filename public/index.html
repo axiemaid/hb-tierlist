@@ -625,17 +625,10 @@ async function downloadImage() {
       useCORS: true,
     });
     
-    // Convert to blob and trigger direct download (avoids huge data URLs)
+    // Use blob URL (not data URL) so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'tier-list.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      // Revoke after a delay to ensure download starts
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      const imgUrl = URL.createObjectURL(blob);
+      showPreviewOverlay(imgUrl);
     }, 'image/png');
     
   } catch (err) {
@@ -648,6 +641,44 @@ async function downloadImage() {
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
   }
+}
+
+// Show the generated PNG as an overlay. Uses blob: URL so the image is
+// right-click savable in all browsers (data: URLs often aren't).
+function showPreviewOverlay(imgUrl) {
+  // Build overlay without destroying the page
+  const overlay = document.createElement('div');
+  overlay.id = 'previewOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+  
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'margin-bottom:16px;display:flex;gap:8px;';
+  
+  const dl = document.createElement('a');
+  dl.href = imgUrl;
+  dl.download = 'tier-list.png';
+  dl.textContent = '⬇ Download PNG';
+  dl.style.cssText = 'background:#4ecca3;color:#16213e;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;';
+  
+  const close = document.createElement('button');
+  close.textContent = '✕ Close';
+  close.style.cssText = 'background:#b22222;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;';
+  close.onclick = function() {
+    URL.revokeObjectURL(imgUrl);
+    overlay.remove();
+  };
+  
+  btnRow.appendChild(dl);
+  btnRow.appendChild(close);
+  
+  const img = document.createElement('img');
+  img.src = imgUrl;
+  img.alt = 'Tier List';
+  img.style.cssText = 'max-width:90vw;max-height:80vh;width:auto;height:auto;object-fit:contain;border-radius:8px;';
+  
+  overlay.appendChild(btnRow);
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
 }
 
 init();
