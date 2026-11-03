@@ -625,8 +625,19 @@ async function downloadImage() {
       useCORS: true,
     });
     
-    const dataUrl = canvas.toDataURL('image/png');
-    showPreview(dataUrl);
+    // Convert to blob and trigger direct download (avoids huge data URLs)
+    canvas.toBlob(function(blob) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tier-list.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // Revoke after a delay to ensure download starts
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }, 'image/png');
+    
   } catch (err) {
     alert('Failed to capture: ' + err.message);
   } finally {
@@ -637,35 +648,6 @@ async function downloadImage() {
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
   }
-}
-
-function showPreview(dataUrl) {
-  // Open preview in a new tab so the original page stays intact
-  const w = window.open('', '_blank');
-  if (!w) {
-    // Popup blocked — fall back to download link in current page
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = 'tier-list.png';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    return;
-  }
-  w.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head><title>Tier List Preview</title></head>
-    <body style="margin:0;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;">
-      <div style="margin-bottom:16px;">
-        <button onclick="window.close()" style="background:#b22222;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;">← Close</button>
-        <a href="${dataUrl}" download="tier-list.png" style="background:#4ecca3;color:#16213e;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;margin-left:8px;">⬇ Download PNG</a>
-      </div>
-      <img src="${dataUrl}" alt="Tier List" style="max-width:90vw;max-height:80vh;width:auto;height:auto;object-fit:contain;border-radius:8px;cursor:default;">
-    </body>
-    </html>
-  `);
-  w.document.close();
 }
 
 init();
