@@ -311,7 +311,6 @@ body {
 
 <div class="header" id="header">
   <img src="back.png" alt="logo">
-  <input type="text" id="title" value="My Hyper Battle Tier List" placeholder="Tier list title...">
   <div class="actions">
     <button onclick="downloadImage()">📷 Save as PNG</button>
     <button class="secondary" onclick="resetTiers()">Reset</button>
@@ -320,8 +319,7 @@ body {
 
 <div class="pool-section" id="poolSection">
   <div class="pool-header">
-    <h2>Card Pool</h2>
-    <span class="count" id="poolCount">0</span>
+    <h2>Drag & Drop Cards Below</h2>
   </div>
   <div class="card-pool" id="cardPool"></div>
 </div>
@@ -528,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function updatePoolCount() {
   const count = document.getElementById('cardPool').querySelectorAll('.card').length;
-  document.getElementById('poolCount').textContent = count + ' remaining';
+  // pool count display removed
 }
 
 function resetTiers() {
@@ -602,8 +600,7 @@ async function downloadImage() {
     // Use blob URL so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
       const imgUrl = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png');
-      const title = document.getElementById('title').value || 'tier-list';
-      const filename = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+      const filename = 'tier-list.png';
       showPreviewOverlay(imgUrl, filename);
     }, 'image/png');
     
