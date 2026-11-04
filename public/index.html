@@ -542,13 +542,35 @@ async function downloadImage() {
   const caption = document.getElementById('caption');
   const area = document.getElementById('captureArea');
   
+  // Card dimensions (must match CSS)
+  const cardW = 90;
+  const cardGap = 6;
+  const tierPad = 8; // .tier-content padding
+  const labelW = 80; // .tier-label width
+  const minCards = 5;
+  const minWidth = labelW + tierPad * 2 + minCards * cardW + (minCards - 1) * cardGap;
+  
   // Hide header/pool, show caption for the capture
   header.classList.add('hide-on-capture');
   poolSection.classList.add('hide-on-capture');
   caption.classList.remove('hide-on-capture');
   caption.style.display = 'block';
   
-  // Let layout settle after hiding elements
+  // Shrink tier contents to fit content (min 5 cards wide)
+  // This crops the PNG to actual card count, not full page width
+  const tierContents = area.querySelectorAll('.tier-content');
+  const origStyles = [];
+  tierContents.forEach(el => {
+    origStyles.push(el.style.width, el.style.minWidth, el.style.flex);
+    el.style.width = 'fit-content';
+    el.style.minWidth = minWidth + 'px';
+    el.style.flex = 'none';
+  });
+  const origAreaWidth = area.style.width;
+  area.style.width = 'fit-content';
+  area.style.minWidth = minWidth + 'px';
+  
+  // Let layout settle after changes
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
@@ -559,6 +581,13 @@ async function downloadImage() {
     });
     
     // Restore DOM before showing overlay
+    tierContents.forEach(el => {
+      el.style.width = '';
+      el.style.minWidth = '';
+      el.style.flex = '';
+    });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
     
@@ -571,6 +600,13 @@ async function downloadImage() {
     }, 'image/png');
     
   } catch (err) {
+    tierContents.forEach(el => {
+      el.style.width = '';
+      el.style.minWidth = '';
+      el.style.flex = '';
+    });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
     alert('Failed to capture: ' + err.message);
