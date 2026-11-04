@@ -542,36 +542,13 @@ async function downloadImage() {
   const caption = document.getElementById('caption');
   const area = document.getElementById('captureArea');
   
-  // Compute min width: 5 cards + gaps + padding + tier-label width
-  const cardW = 90;
-  const cardGap = 6;
-  const tierPadding = 8;
-  const labelW = 80;
-  const minCards = 5;
-  const minWidth = labelW + tierPadding * 2 + minCards * cardW + (minCards - 1) * cardGap;
-  
-  // Manipulate the real DOM directly for html2canvas capture.
-  // The hide-on-capture CSS hides header/pool instantly (display:none).
+  // Hide header/pool, show caption for the capture
   header.classList.add('hide-on-capture');
   poolSection.classList.add('hide-on-capture');
   caption.classList.remove('hide-on-capture');
   caption.style.display = 'block';
   
-  // Shrink tier contents to fit content
-  const tierContents = area.querySelectorAll('.tier-content');
-  const origStyles = [];
-  tierContents.forEach(el => {
-    origStyles.push(el.style.width);
-    el.style.width = 'fit-content';
-    el.style.minWidth = minWidth + 'px';
-    el.style.flex = 'none';
-  });
-  
-  const origAreaWidth = area.style.width;
-  area.style.width = 'fit-content';
-  area.style.minWidth = minWidth + 'px';
-  
-  // Let layout settle
+  // Let layout settle after hiding elements
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
@@ -581,26 +558,22 @@ async function downloadImage() {
       useCORS: true,
     });
     
-    // Direct download (proven approach from original)
-    const dataUrl = canvas.toDataURL('image/png');
-    const title = document.getElementById('title').value || 'tier-list';
-    const filename = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+    // Restore DOM before showing overlay
+    header.classList.remove('hide-on-capture');
+    poolSection.classList.remove('hide-on-capture');
     
-    // Also make a blob URL for the overlay image (right-click savable)
+    // Use blob URL so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
-      const imgUrl = blob ? URL.createObjectURL(blob) : dataUrl;
+      const imgUrl = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png');
+      const title = document.getElementById('title').value || 'tier-list';
+      const filename = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
       showPreviewOverlay(imgUrl, filename);
     }, 'image/png');
     
   } catch (err) {
-    alert('Failed to capture: ' + err.message);
-  } finally {
-    // Restore styles immediately
-    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
-    area.style.width = origAreaWidth;
-    area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
+    alert('Failed to capture: ' + err.message);
   }
 }
 
