@@ -550,6 +550,12 @@ async function downloadImage() {
   const minCards = 5;
   const minWidth = labelW + tierPad * 2 + minCards * cardW + (minCards - 1) * cardGap;
   
+  // Cover the page with a black screen during capture manipulation
+  // so the user never sees layout changes (no flicker)
+  const screen = document.createElement('div');
+  screen.style.cssText = 'position:fixed;inset:0;z-index:9998;background:#0a0a0a;';
+  document.body.appendChild(screen);
+  
   // Hide header/pool, show caption for the capture
   header.classList.add('hide-on-capture');
   poolSection.classList.add('hide-on-capture');
@@ -557,7 +563,6 @@ async function downloadImage() {
   caption.style.display = 'block';
   
   // Shrink tier contents to fit content (min 5 cards wide)
-  // This crops the PNG to actual card count, not full page width
   const tierContents = area.querySelectorAll('.tier-content');
   const origStyles = [];
   tierContents.forEach(el => {
@@ -580,7 +585,7 @@ async function downloadImage() {
       useCORS: true,
     });
     
-    // Restore DOM before showing overlay
+    // Restore DOM
     tierContents.forEach(el => {
       el.style.width = '';
       el.style.minWidth = '';
@@ -590,6 +595,8 @@ async function downloadImage() {
     area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
+    // Remove black screen — overlay will take its place
+    screen.remove();
     
     // Use blob URL so right-click "Save Image As" works
     canvas.toBlob(function(blob) {
@@ -609,6 +616,7 @@ async function downloadImage() {
     area.style.minWidth = '';
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
+    screen.remove();
     alert('Failed to capture: ' + err.message);
   }
 }
