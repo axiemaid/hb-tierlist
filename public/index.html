@@ -435,10 +435,42 @@ function createCardEl(card) {
     const target = findDropTarget(touchDrag.x, touchDrag.y);
     document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
     if (target) target.classList.add('drag-over');
+    
+    // Auto-scroll when dragging near top or bottom edge
+    const edge = 80; // px from edge to trigger scroll
+    const speed = 15; // px per frame
+    const vh = window.innerHeight;
+    if (touchDrag.y < edge) {
+      // Scroll up
+      if (!touchDrag.scrollInterval) {
+        touchDrag.scrollInterval = setInterval(() => {
+          window.scrollBy(0, -speed);
+        }, 16);
+      }
+    } else if (touchDrag.y > vh - edge) {
+      // Scroll down
+      if (!touchDrag.scrollInterval) {
+        touchDrag.scrollInterval = setInterval(() => {
+          window.scrollBy(0, speed);
+        }, 16);
+      }
+    } else {
+      // Stop scrolling
+      if (touchDrag.scrollInterval) {
+        clearInterval(touchDrag.scrollInterval);
+        touchDrag.scrollInterval = null;
+      }
+    }
   }, { passive: false });
   
   el.addEventListener('touchend', (e) => {
     if (!touchDrag.cardId) return;
+    
+    // Stop auto-scroll
+    if (touchDrag.scrollInterval) {
+      clearInterval(touchDrag.scrollInterval);
+      touchDrag.scrollInterval = null;
+    }
     
     if (touchDrag.ghost) {
       touchDrag.ghost.remove();
@@ -479,7 +511,7 @@ function createCardEl(card) {
 }
 
 // Touch drag state
-const touchDrag = { cardId: null, el: null, ghost: null, startX: 0, startY: 0, x: 0, y: 0, decided: false, isDrag: false };
+const touchDrag = { cardId: null, el: null, ghost: null, startX: 0, startY: 0, x: 0, y: 0, decided: false, isDrag: false, inTier: false, scrollInterval: null };
 
 // Find tier-content or card-pool under a point
 function findDropTarget(x, y) {
