@@ -157,6 +157,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 90;
+  overscroll-behavior: contain;
 }
 
 .pool-header {
@@ -209,6 +210,7 @@ body {
   background: rgba(255,255,255,0.02);
   border-radius: 8px;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: #444 #222;
 }
@@ -231,6 +233,7 @@ body {
   position: relative;
   border: 2px solid transparent;
   flex-shrink: 0;
+  touch-action: pan-x;
 }
 
 .card.dragging {
