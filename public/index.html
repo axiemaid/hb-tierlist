@@ -410,6 +410,7 @@ function createCardEl(card) {
   el.dataset.cardId = card.id;
   el.innerHTML = `<img src="${card.image}" alt="${card.id}" loading="lazy">`;
   
+  // Desktop drag-and-drop
   el.addEventListener('dragstart', (e) => {
     draggedCardId = card.id;
     el.classList.add('dragging');
@@ -421,7 +422,90 @@ function createCardEl(card) {
     draggedCardId = null;
   });
   
+  // Touch drag-and-drop for mobile
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    touchDrag.cardId = card.id;
+    touchDrag.el = el;
+    touchDrag.startX = e.touches[0].clientX;
+    touchDrag.startY = e.touches[0].clientY;
+  }, { passive: true });
+  
+  el.addEventListener('touchmove', (e) => {
+    if (!touchDrag.cardId) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    touchDrag.x = t.clientX;
+    touchDrag.y = t.clientY;
+    
+    // Create ghost on first move
+    if (!touchDrag.ghost) {
+      touchDrag.el.classList.add('dragging');
+      draggedCardId = touchDrag.cardId;
+      const ghost = el.cloneNode(true);
+      ghost.style.cssText = 'position:fixed;pointer-events:none;z-index:10000;opacity:0.8;width:' + el.offsetWidth + 'px;height:' + el.offsetHeight + 'px;';
+      document.body.appendChild(ghost);
+      touchDrag.ghost = ghost;
+    }
+    
+    // Move ghost
+    touchDrag.ghost.style.left = (touchDrag.x - touchDrag.ghost.offsetWidth / 2) + 'px';
+    touchDrag.ghost.style.top = (touchDrag.y - touchDrag.ghost.offsetHeight / 2) + 'px';
+    
+    // Highlight drop target
+    const target = findDropTarget(touchDrag.x, touchDrag.y);
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    if (target) target.classList.add('drag-over');
+  }, { passive: false });
+  
+  el.addEventListener('touchend', (e) => {
+    if (!touchDrag.cardId) return;
+    
+    if (touchDrag.ghost) {
+      touchDrag.ghost.remove();
+      touchDrag.ghost = null;
+    }
+    touchDrag.el.classList.remove('dragging');
+    
+    const target = findDropTarget(touchDrag.x, touchDrag.y);
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+    
+    if (target && touchDrag.cardId) {
+      const card = cards.find(c => c.id === touchDrag.cardId);
+      if (card) {
+        const oldEl = document.querySelector(`.card[data-card-id="${touchDrag.cardId}"]`);
+        if (oldEl) oldEl.remove();
+        const newEl = createCardEl(card);
+        const afterElement = getDragAfterElement(target, touchDrag.x);
+        if (afterElement) {
+          target.insertBefore(newEl, afterElement);
+        } else {
+          target.appendChild(newEl);
+        }
+        syncPool();
+      }
+    }
+    
+    touchDrag.cardId = null;
+    touchDrag.el = null;
+    draggedCardId = null;
+  }, { passive: true });
+  
   return el;
+}
+
+// Touch drag state
+const touchDrag = { cardId: null, el: null, ghost: null, startX: 0, startY: 0, x: 0, y: 0 };
+
+// Find tier-content or card-pool under a point
+function findDropTarget(x, y) {
+  const els = document.elementsFromPoint(x, y);
+  for (const el of els) {
+    if (el.classList && (el.classList.contains('tier-content') || el.classList.contains('card-pool'))) {
+      return el;
+    }
+  }
+  return null;
 }
 
 function onDragOver(e, el) {
