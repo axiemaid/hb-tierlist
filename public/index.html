@@ -205,6 +205,38 @@ body {
   background: rgba(178,34,34,0.1);
 }
 
+/* Gallery scroll buttons (desktop only) */
+.pool-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pool-scroll-btn {
+  display: none;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(178,34,34,0.8);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  z-index: 5;
+}
+
+.pool-scroll-btn:hover {
+  background: rgba(211,47,47,0.9);
+}
+
+@media (min-width: 769px) {
+  .pool-scroll-btn { display: flex; }
+}
+
 /* Cards */
 .card {
   width: 90px;
@@ -305,7 +337,11 @@ body {
   <div class="pool-header">
     <h2>Drag & drop cards below</h2>
   </div>
-  <div class="card-pool" id="cardPool"></div>
+  <div class="pool-wrapper">
+    <button class="pool-scroll-btn pool-scroll-left" onclick="scrollPool(-300)">◀</button>
+    <div class="card-pool" id="cardPool"></div>
+    <button class="pool-scroll-btn pool-scroll-right" onclick="scrollPool(300)">▶</button>
+  </div>
 </div>
 
 <div class="main capture-container" id="captureArea">
@@ -627,6 +663,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function updatePoolCount() {
   const count = document.getElementById('cardPool').querySelectorAll('.card').length;
   // pool count display removed
+}
+
+function scrollPool(amount) {
+  const pool = document.getElementById('cardPool');
+  pool.scrollBy({ left: amount, behavior: 'smooth' });
 }
 
 function resetTiers() {
