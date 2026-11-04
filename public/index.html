@@ -218,6 +218,14 @@ body {
   touch-action: pan-x;
 }
 
+.card-pool .card {
+  touch-action: pan-x;
+}
+
+.tier-content .card {
+  touch-action: none;
+}
+
 .card.dragging {
   opacity: 0.4;
   cursor: grabbing;
@@ -384,6 +392,8 @@ function createCardEl(card) {
     touchDrag.ghost = null;
     touchDrag.decided = false;
     touchDrag.isDrag = false;
+    // Cards in tier rows can drag in any direction (no horizontal scroll to preserve)
+    touchDrag.inTier = el.closest('.tier-content') !== null;
   }, { passive: true });
   
   el.addEventListener('touchmove', (e) => {
@@ -396,7 +406,8 @@ function createCardEl(card) {
     if (!touchDrag.decided) {
       if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
       touchDrag.decided = true;
-      touchDrag.isDrag = Math.abs(dy) > Math.abs(dx);
+      // In tier rows, always drag. In gallery, only vertical = drag.
+      touchDrag.isDrag = touchDrag.inTier || Math.abs(dy) > Math.abs(dx);
     }
     
     // Let horizontal swipes scroll the gallery
