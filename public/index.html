@@ -636,8 +636,22 @@ async function downloadImage() {
   // Cover the page with a black screen during capture manipulation
   // so the user never sees layout changes (no flicker)
   const screen = document.createElement('div');
-  screen.style.cssText = 'position:fixed;inset:0;z-index:9998;background:#0a0a0a;';
+  screen.style.cssText = 'position:fixed;inset:0;z-index:9998;background:#0a0a0a;display:flex;align-items:center;justify-content:center;color:#888;font-size:14px;';
+  screen.textContent = 'Generating PNG...';
   document.body.appendChild(screen);
+  
+  function restoreAll() {
+    tierContents.forEach(el => {
+      el.style.width = '';
+      el.style.minWidth = '';
+      el.style.flex = '';
+    });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
+    header.classList.remove('hide-on-capture');
+    poolSection.classList.remove('hide-on-capture');
+    screen.remove();
+  }
   
   // Hide header/pool, show caption for the capture
   header.classList.add('hide-on-capture');
@@ -663,24 +677,18 @@ async function downloadImage() {
   
   try {
     const isMobile = window.innerWidth <= 768;
-    const canvas = await html2canvas(area, {
-      backgroundColor: '#0a0a0a',
-      scale: isMobile ? 1.5 : 2,
-      useCORS: true,
-    });
+    // Add timeout in case html2canvas hangs on mobile
+    const canvas = await Promise.race([
+      html2canvas(area, {
+        backgroundColor: '#0a0a0a',
+        scale: isMobile ? 1.5 : 2,
+        useCORS: true,
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Capture timed out')), 15000))
+    ]);
     
     // Restore DOM
-    tierContents.forEach(el => {
-      el.style.width = '';
-      el.style.minWidth = '';
-      el.style.flex = '';
-    });
-    area.style.width = origAreaWidth;
-    area.style.minWidth = '';
-    header.classList.remove('hide-on-capture');
-    poolSection.classList.remove('hide-on-capture');
-    // Remove black screen — overlay will take its place
-    screen.remove();
+    restoreAll();
     
     // Use blob URL so right-click "Save Image As" works
     // Fall back to dataURL if toBlob doesn't fire (some mobile browsers)
@@ -701,16 +709,7 @@ async function downloadImage() {
     showPreviewOverlay(imgUrl, filename);
     
   } catch (err) {
-    tierContents.forEach(el => {
-      el.style.width = '';
-      el.style.minWidth = '';
-      el.style.flex = '';
-    });
-    area.style.width = origAreaWidth;
-    area.style.minWidth = '';
-    header.classList.remove('hide-on-capture');
-    poolSection.classList.remove('hide-on-capture');
-    screen.remove();
+    restoreAll();
     alert('Failed to capture: ' + err.message);
   }
 }
