@@ -57,7 +57,7 @@ body {
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -655,7 +655,9 @@ function toggleFullscreen() {
     const closeBtn = document.createElement('button');
     closeBtn.id = 'fsClose';
     closeBtn.textContent = '✕ Exit Fullscreen';
-    closeBtn.style.cssText = 'display:block;margin:12px auto 44px;width:fit-content;background:#b22222;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;';
+    closeBtn.style.cssText = 'display:block;margin:12px auto 44px;width:fit-content;background:#b22222;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.15s;';
+    closeBtn.onmouseenter = function() { closeBtn.style.background = '#d32f2f'; };
+    closeBtn.onmouseleave = function() { closeBtn.style.background = '#b22222'; };
     closeBtn.onclick = toggleFullscreen;
     const area = document.getElementById('captureArea');
     area.insertBefore(closeBtn, area.firstChild);
