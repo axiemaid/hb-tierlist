@@ -548,7 +548,8 @@ async function downloadImage() {
   const tierPad = 8; // .tier-content padding
   const labelW = 80; // .tier-label width
   const minCards = 5;
-  const minWidth = labelW + tierPad * 2 + minCards * cardW + (minCards - 1) * cardGap;
+  // minWidth applies to .tier-content only (not the label, which is a sibling)
+  const contentMinWidth = tierPad * 2 + minCards * cardW + (minCards - 1) * cardGap;
   
   // Cover the page with a black screen during capture manipulation
   // so the user never sees layout changes (no flicker)
@@ -568,12 +569,12 @@ async function downloadImage() {
   tierContents.forEach(el => {
     origStyles.push(el.style.width, el.style.minWidth, el.style.flex);
     el.style.width = 'fit-content';
-    el.style.minWidth = minWidth + 'px';
+    el.style.minWidth = contentMinWidth + 'px';
     el.style.flex = 'none';
   });
   const origAreaWidth = area.style.width;
   area.style.width = 'fit-content';
-  area.style.minWidth = minWidth + 'px';
+  area.style.minWidth = (labelW + contentMinWidth) + 'px';
   
   // Let layout settle after changes
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
