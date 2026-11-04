@@ -662,9 +662,10 @@ async function downloadImage() {
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
+    const isMobile = window.innerWidth <= 768;
     const canvas = await html2canvas(area, {
       backgroundColor: '#0a0a0a',
-      scale: 2,
+      scale: isMobile ? 1.5 : 2,
       useCORS: true,
     });
     
@@ -682,11 +683,22 @@ async function downloadImage() {
     screen.remove();
     
     // Use blob URL so right-click "Save Image As" works
-    canvas.toBlob(function(blob) {
-      const imgUrl = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png');
-      const filename = 'tier-list.png';
-      showPreviewOverlay(imgUrl, filename);
-    }, 'image/png');
+    // Fall back to dataURL if toBlob doesn't fire (some mobile browsers)
+    const imgUrl = await new Promise(resolve => {
+      let done = false;
+      const fallback = setTimeout(() => {
+        if (!done) { done = true; resolve(canvas.toDataURL('image/png')); }
+      }, 2000);
+      canvas.toBlob(function(blob) {
+        if (!done) {
+          done = true;
+          clearTimeout(fallback);
+          resolve(blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png'));
+        }
+      }, 'image/png');
+    });
+    const filename = 'tier-list.png';
+    showPreviewOverlay(imgUrl, filename);
     
   } catch (err) {
     tierContents.forEach(el => {
