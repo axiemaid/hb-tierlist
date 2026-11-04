@@ -407,6 +407,7 @@ function buildPool() {
   });
   
   updatePoolCount();
+  setTimeout(updateScrollButtons, 0);
 }
 
 function createCardEl(card) {
@@ -652,6 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pool = document.getElementById('cardPool');
   pool.addEventListener('dragover', (e) => { e.preventDefault(); pool.classList.add('drag-over'); });
   pool.addEventListener('dragleave', () => { pool.classList.remove('drag-over'); });
+  pool.addEventListener('scroll', updateScrollButtons);
   pool.addEventListener('drop', (e) => {
     e.preventDefault();
     pool.classList.remove('drag-over');
@@ -679,6 +681,16 @@ function updatePoolCount() {
 function scrollPool(amount) {
   const pool = document.getElementById('cardPool');
   pool.scrollBy({ left: amount, behavior: 'smooth' });
+}
+
+function updateScrollButtons() {
+  const pool = document.getElementById('cardPool');
+  const left = document.querySelector('.pool-scroll-left');
+  const right = document.querySelector('.pool-scroll-right');
+  if (!pool || !left || !right) return;
+  // Hide left arrow at start, right arrow at end
+  left.style.visibility = pool.scrollLeft > 5 ? 'visible' : 'hidden';
+  right.style.visibility = pool.scrollLeft + pool.clientWidth < pool.scrollWidth - 5 ? 'visible' : 'hidden';
 }
 
 function resetTiers() {
