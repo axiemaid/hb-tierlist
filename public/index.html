@@ -105,24 +105,6 @@ body {
   position: relative;
 }
 
-.tier-label:hover::after {
-  content: '✏️';
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  font-size: 14px;
-}
-
-.tier-label input {
-  width: 50px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
-  text-align: center;
-  font-size: 24px;
-  font-weight: 900;
-  border-radius: 4px;
-}
 
 .tier-content {
   flex: 1;
@@ -352,35 +334,11 @@ function buildTiers() {
     const row = document.createElement('div');
     row.className = 'tier-row';
     row.innerHTML = `
-      <div class="tier-label ${tier.class}" data-tier="${i}" onclick="editLabel(this)">${tier.label}</div>
+      <div class="tier-label ${tier.class}" data-tier="${i}">${tier.label}</div>
       <div class="tier-content" data-tier="${i}" ondragover="onDragOver(event, this)" ondragleave="onDragLeave(event, this)" ondrop="onDrop(event, this)"></div>
     `;
     list.appendChild(row);
   });
-}
-
-function editLabel(el) {
-  const current = el.textContent;
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.value = current;
-  input.maxLength = 3;
-  el.innerHTML = '';
-  el.appendChild(input);
-  input.focus();
-  input.select();
-  
-  const save = () => {
-    const val = input.value.trim() || current;
-    TIERS[parseInt(el.dataset.tier)].label = val;
-    el.innerHTML = val;
-  };
-  
-  input.onblur = save;
-  input.onkeydown = (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); save(); }
-    if (e.key === 'Escape') { el.innerHTML = current; }
-  };
 }
 
 function buildPool() {
