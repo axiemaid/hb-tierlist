@@ -419,22 +419,39 @@ function createCardEl(card) {
   });
   
   // Touch drag-and-drop for mobile
+  // Vertical movement = drag card, horizontal movement = scroll gallery
   el.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return;
     touchDrag.cardId = card.id;
     touchDrag.el = el;
     touchDrag.startX = e.touches[0].clientX;
     touchDrag.startY = e.touches[0].clientY;
+    touchDrag.ghost = null;
+    touchDrag.decided = false;
+    touchDrag.isDrag = false;
   }, { passive: true });
   
   el.addEventListener('touchmove', (e) => {
     if (!touchDrag.cardId) return;
-    e.preventDefault();
     const t = e.touches[0];
+    const dx = t.clientX - touchDrag.startX;
+    const dy = t.clientY - touchDrag.startY;
+    
+    // Decide direction on first significant move
+    if (!touchDrag.decided) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      touchDrag.decided = true;
+      touchDrag.isDrag = Math.abs(dy) > Math.abs(dx);
+    }
+    
+    // Let horizontal swipes scroll the gallery
+    if (!touchDrag.isDrag) return;
+    
+    e.preventDefault();
     touchDrag.x = t.clientX;
     touchDrag.y = t.clientY;
     
-    // Create ghost on first move
+    // Create ghost on first drag move
     if (!touchDrag.ghost) {
       touchDrag.el.classList.add('dragging');
       draggedCardId = touchDrag.cardId;
@@ -463,27 +480,32 @@ function createCardEl(card) {
     }
     touchDrag.el.classList.remove('dragging');
     
-    const target = findDropTarget(touchDrag.x, touchDrag.y);
-    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-    
-    if (target && touchDrag.cardId) {
-      const card = cards.find(c => c.id === touchDrag.cardId);
-      if (card) {
-        const oldEl = document.querySelector(`.card[data-card-id="${touchDrag.cardId}"]`);
-        if (oldEl) oldEl.remove();
-        const newEl = createCardEl(card);
-        const afterElement = getDragAfterElement(target, touchDrag.x);
-        if (afterElement) {
-          target.insertBefore(newEl, afterElement);
-        } else {
-          target.appendChild(newEl);
+    // Only drop if we were dragging (not scrolling)
+    if (touchDrag.isDrag) {
+      const target = findDropTarget(touchDrag.x, touchDrag.y);
+      document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+      
+      if (target && touchDrag.cardId) {
+        const card = cards.find(c => c.id === touchDrag.cardId);
+        if (card) {
+          const oldEl = document.querySelector(`.card[data-card-id="${touchDrag.cardId}"]`);
+          if (oldEl) oldEl.remove();
+          const newEl = createCardEl(card);
+          const afterElement = getDragAfterElement(target, touchDrag.x);
+          if (afterElement) {
+            target.insertBefore(newEl, afterElement);
+          } else {
+            target.appendChild(newEl);
+          }
+          syncPool();
         }
-        syncPool();
       }
     }
     
     touchDrag.cardId = null;
     touchDrag.el = null;
+    touchDrag.decided = false;
+    touchDrag.isDrag = false;
     draggedCardId = null;
   }, { passive: true });
   
@@ -491,7 +513,7 @@ function createCardEl(card) {
 }
 
 // Touch drag state
-const touchDrag = { cardId: null, el: null, ghost: null, startX: 0, startY: 0, x: 0, y: 0 };
+const touchDrag = { cardId: null, el: null, ghost: null, startX: 0, startY: 0, x: 0, y: 0, decided: false, isDrag: false };
 
 // Find tier-content or card-pool under a point
 function findDropTarget(x, y) {
