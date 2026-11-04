@@ -550,38 +550,32 @@ async function downloadImage() {
   const minCards = 5;
   const minWidth = labelW + tierPadding * 2 + minCards * cardW + (minCards - 1) * cardGap;
   
-  // Clone the capture area to a hidden container so we can
-  // manipulate layout without any visible flicker on the real page.
-  // Must stay on-screen (not off-screen) for html2canvas to render it.
-  const cloneWrap = document.createElement('div');
-  cloneWrap.style.cssText = 'position:fixed;top:0;left:0;z-index:-1;opacity:0;pointer-events:none;';
-  const clone = area.cloneNode(true);
-  clone.style.width = 'fit-content';
-  clone.style.minWidth = minWidth + 'px';
+  // Manipulate the real DOM directly for html2canvas capture.
+  // The hide-on-capture CSS hides header/pool instantly (display:none).
+  header.classList.add('hide-on-capture');
+  poolSection.classList.add('hide-on-capture');
+  caption.classList.remove('hide-on-capture');
+  caption.style.display = 'block';
   
-  // Shrink tier contents in the clone
-  clone.querySelectorAll('.tier-content').forEach(el => {
+  // Shrink tier contents to fit content
+  const tierContents = area.querySelectorAll('.tier-content');
+  const origStyles = [];
+  tierContents.forEach(el => {
+    origStyles.push(el.style.width);
     el.style.width = 'fit-content';
     el.style.minWidth = minWidth + 'px';
     el.style.flex = 'none';
   });
   
-  // Show caption in the clone (normally hidden)
-  const cloneCaption = clone.querySelector('#caption');
-  if (cloneCaption) {
-    cloneCaption.classList.remove('hide-on-capture');
-    cloneCaption.style.display = 'block';
-  }
-  
-  cloneWrap.appendChild(clone);
-  document.body.appendChild(cloneWrap);
+  const origAreaWidth = area.style.width;
+  area.style.width = 'fit-content';
+  area.style.minWidth = minWidth + 'px';
   
   // Let layout settle
   await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   
   try {
-    // html2canvas needs the element visible to render it
-    const canvas = await html2canvas(clone, {
+    const canvas = await html2canvas(area, {
       backgroundColor: '#0a0a0a',
       scale: 2,
       useCORS: true,
@@ -597,7 +591,12 @@ async function downloadImage() {
   } catch (err) {
     alert('Failed to capture: ' + err.message);
   } finally {
-    cloneWrap.remove();
+    // Restore styles immediately
+    tierContents.forEach((el, i) => { el.style.width = origStyles[i]; el.style.minWidth = ''; el.style.flex = ''; });
+    area.style.width = origAreaWidth;
+    area.style.minWidth = '';
+    header.classList.remove('hide-on-capture');
+    poolSection.classList.remove('hide-on-capture');
   }
 }
 
