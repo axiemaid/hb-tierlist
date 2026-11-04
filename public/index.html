@@ -658,10 +658,13 @@ function toggleFullscreen() {
     closeBtn.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:#b22222;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;';
     closeBtn.onclick = toggleFullscreen;
     document.body.appendChild(closeBtn);
+    // Push tier list down below the button
+    document.getElementById('captureArea').style.paddingTop = '56px';
   } else {
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
     caption.style.display = '';
+    document.getElementById('captureArea').style.paddingTop = '';
     const closeBtn = document.getElementById('fsClose');
     if (closeBtn) closeBtn.remove();
   }
