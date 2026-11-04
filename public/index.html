@@ -209,29 +209,34 @@ body {
 .pool-wrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
+  position: relative;
 }
 
 .pool-scroll-btn {
   display: none;
-  flex-shrink: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(178,34,34,0.8);
+  background: rgba(255,255,255,0.25);
   color: #fff;
   border: none;
   font-size: 14px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s;
   z-index: 5;
+  backdrop-filter: blur(4px);
 }
 
 .pool-scroll-btn:hover {
-  background: rgba(211,47,47,0.9);
+  background: rgba(255,255,255,0.4);
 }
+
+.pool-scroll-left { left: 4px; }
+.pool-scroll-right { right: 4px; }
 
 @media (min-width: 769px) {
   .pool-scroll-btn { display: flex; }
