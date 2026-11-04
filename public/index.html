@@ -655,7 +655,7 @@ function toggleFullscreen() {
     const closeBtn = document.createElement('button');
     closeBtn.id = 'fsClose';
     closeBtn.textContent = '✕ Exit Fullscreen';
-    closeBtn.style.cssText = 'display:block;margin:12px auto;width:fit-content;background:#b22222;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;';
+    closeBtn.style.cssText = 'display:block;margin:12px auto 44px;width:fit-content;background:#b22222;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;';
     closeBtn.onclick = toggleFullscreen;
     const area = document.getElementById('captureArea');
     area.insertBefore(closeBtn, area.firstChild);
