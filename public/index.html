@@ -312,7 +312,7 @@ body {
 <div class="header" id="header">
   <img src="back.png" alt="logo">
   <div class="actions">
-    <button onclick="downloadImage()">📷 Save as PNG</button>
+    <button onclick="toggleFullscreen()">⛶ View Fullscreen</button>
     <button class="secondary" onclick="resetTiers()">Reset</button>
   </div>
 </div>
@@ -329,7 +329,6 @@ body {
   <div class="capture-caption" id="caption">hb-tier.vercel.app</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 const TIERS = [
   { label: 'S', class: 'tier-s' },
@@ -618,117 +617,25 @@ function resetTiers() {
   buildPool();
 }
 
-async function downloadImage() {
+let isFullscreen = false;
+
+function toggleFullscreen() {
   const header = document.getElementById('header');
   const poolSection = document.getElementById('poolSection');
   const caption = document.getElementById('caption');
-  const area = document.getElementById('captureArea');
   
-  // Card dimensions (must match CSS)
-  const cardW = 90;
-  const cardGap = 6;
-  const tierPad = 8; // .tier-content padding
-  const labelW = 80; // .tier-label width
-  const minCards = 5;
-  // minWidth applies to .tier-content only (not the label, which is a sibling)
-  const contentMinWidth = tierPad * 2 + minCards * cardW + (minCards - 1) * cardGap;
+  isFullscreen = !isFullscreen;
   
-  // Cover the page with a loading screen
-  const screen = document.createElement('div');
-  screen.style.cssText = 'position:fixed;inset:0;z-index:9998;background:#0a0a0a;display:flex;align-items:center;justify-content:center;color:#888;font-size:14px;';
-  screen.textContent = 'Generating PNG...';
-  document.body.appendChild(screen);
-  
-  // Hide header/pool, show caption for capture
-  header.classList.add('hide-on-capture');
-  poolSection.classList.add('hide-on-capture');
-  caption.classList.remove('hide-on-capture');
-  caption.style.display = 'block';
-  
-  // Let layout settle
-  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-  
-  function restoreAll() {
+  if (isFullscreen) {
+    header.classList.add('hide-on-capture');
+    poolSection.classList.add('hide-on-capture');
+    caption.classList.remove('hide-on-capture');
+    caption.style.display = 'block';
+  } else {
     header.classList.remove('hide-on-capture');
     poolSection.classList.remove('hide-on-capture');
-    screen.remove();
+    caption.style.display = '';
   }
-  
-  try {
-    const isMobile = window.innerWidth <= 768;
-    // Add timeout in case html2canvas hangs on mobile
-    const canvas = await Promise.race([
-      html2canvas(area, {
-        backgroundColor: '#0a0a0a',
-        scale: isMobile ? 1 : 2,
-        useCORS: true,
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Capture timed out')), 15000))
-    ]);
-    
-    // Restore DOM
-    restoreAll();
-    
-    // Use blob URL so right-click "Save Image As" works
-    // Fall back to dataURL if toBlob doesn't fire (some mobile browsers)
-    const imgUrl = await new Promise(resolve => {
-      let done = false;
-      const fallback = setTimeout(() => {
-        if (!done) { done = true; resolve(canvas.toDataURL('image/png')); }
-      }, 2000);
-      canvas.toBlob(function(blob) {
-        if (!done) {
-          done = true;
-          clearTimeout(fallback);
-          resolve(blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/png'));
-        }
-      }, 'image/png');
-    });
-    const filename = 'tier-list.png';
-    showPreviewOverlay(imgUrl, filename);
-    
-  } catch (err) {
-    restoreAll();
-    alert('Failed to capture: ' + err.message);
-  }
-}
-
-// Show the generated PNG as an overlay. Uses blob: URL so the image is
-// right-click savable in all browsers (data: URLs often aren't).
-function showPreviewOverlay(imgUrl, filename) {
-  // Build overlay without destroying the page
-  const overlay = document.createElement('div');
-  overlay.id = 'previewOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.97);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px;overflow:auto;';
-  
-  const btnRow = document.createElement('div');
-  btnRow.style.cssText = 'margin-bottom:16px;display:flex;gap:12px;flex-shrink:0;';
-  
-  const dl = document.createElement('a');
-  dl.href = imgUrl;
-  dl.download = filename || 'tier-list.png';
-  dl.textContent = '⬇ Download PNG';
-  dl.style.cssText = 'background:#4ecca3;color:#16213e;border:none;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;';
-  
-  const close = document.createElement('button');
-  close.textContent = '✕ Close';
-  close.style.cssText = 'background:#b22222;color:#fff;border:none;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;';
-  close.onclick = function() {
-    URL.revokeObjectURL(imgUrl);
-    overlay.remove();
-  };
-  
-  btnRow.appendChild(dl);
-  btnRow.appendChild(close);
-  
-  const img = document.createElement('img');
-  img.src = imgUrl;
-  img.alt = 'Tier List';
-  img.style.cssText = 'max-width:90vw;max-height:75vh;width:auto;height:auto;object-fit:contain;flex-shrink:1;';
-  
-  overlay.appendChild(btnRow);
-  overlay.appendChild(img);
-  document.body.appendChild(overlay);
 }
 
 init();
