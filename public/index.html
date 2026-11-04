@@ -579,13 +579,17 @@ async function downloadImage() {
       backgroundColor: '#0a0a0a',
       scale: 2,
       useCORS: true,
-      logging: false,
     });
     
-    // Use blob URL (not data URL) so right-click "Save Image As" works
+    // Direct download (proven approach from original)
+    const dataUrl = canvas.toDataURL('image/png');
+    const title = document.getElementById('title').value || 'tier-list';
+    const filename = title.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+    
+    // Also make a blob URL for the overlay image (right-click savable)
     canvas.toBlob(function(blob) {
-      const imgUrl = URL.createObjectURL(blob);
-      showPreviewOverlay(imgUrl);
+      const imgUrl = blob ? URL.createObjectURL(blob) : dataUrl;
+      showPreviewOverlay(imgUrl, filename);
     }, 'image/png');
     
   } catch (err) {
@@ -602,7 +606,7 @@ async function downloadImage() {
 
 // Show the generated PNG as an overlay. Uses blob: URL so the image is
 // right-click savable in all browsers (data: URLs often aren't).
-function showPreviewOverlay(imgUrl) {
+function showPreviewOverlay(imgUrl, filename) {
   // Build overlay without destroying the page
   const overlay = document.createElement('div');
   overlay.id = 'previewOverlay';
@@ -613,7 +617,7 @@ function showPreviewOverlay(imgUrl) {
   
   const dl = document.createElement('a');
   dl.href = imgUrl;
-  dl.download = 'tier-list.png';
+  dl.download = filename || 'tier-list.png';
   dl.textContent = '⬇ Download PNG';
   dl.style.cssText = 'background:#4ecca3;color:#16213e;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;';
   
