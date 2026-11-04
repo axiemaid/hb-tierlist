@@ -583,20 +583,20 @@ function showPreviewOverlay(imgUrl, filename) {
   // Build overlay without destroying the page
   const overlay = document.createElement('div');
   overlay.id = 'previewOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.97);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px;overflow:auto;';
   
   const btnRow = document.createElement('div');
-  btnRow.style.cssText = 'margin-bottom:16px;display:flex;gap:8px;';
+  btnRow.style.cssText = 'margin-bottom:16px;display:flex;gap:12px;flex-shrink:0;';
   
   const dl = document.createElement('a');
   dl.href = imgUrl;
   dl.download = filename || 'tier-list.png';
   dl.textContent = '⬇ Download PNG';
-  dl.style.cssText = 'background:#4ecca3;color:#16213e;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;';
+  dl.style.cssText = 'background:#4ecca3;color:#16213e;border:none;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;';
   
   const close = document.createElement('button');
   close.textContent = '✕ Close';
-  close.style.cssText = 'background:#b22222;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;';
+  close.style.cssText = 'background:#b22222;color:#fff;border:none;padding:12px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;';
   close.onclick = function() {
     URL.revokeObjectURL(imgUrl);
     overlay.remove();
@@ -608,7 +608,7 @@ function showPreviewOverlay(imgUrl, filename) {
   const img = document.createElement('img');
   img.src = imgUrl;
   img.alt = 'Tier List';
-  img.style.cssText = 'max-width:90vw;max-height:80vh;width:auto;height:auto;object-fit:contain;';;
+  img.style.cssText = 'max-width:90vw;max-height:75vh;width:auto;height:auto;object-fit:contain;flex-shrink:1;';
   
   overlay.appendChild(btnRow);
   overlay.appendChild(img);
