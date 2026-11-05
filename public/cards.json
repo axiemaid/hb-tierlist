@@ -72,7 +72,7 @@
   {
     "id": "c11",
     "name": "Nami",
-    "title": "B\u014djutsu",
+    "title": "Bōjutsu",
     "image": "c11.png",
     "price": 7000
   },
@@ -261,7 +261,7 @@
   {
     "id": "s04",
     "name": "Zoro",
-    "title": "Sant\u014dry\u016b",
+    "title": "Santōryū",
     "image": "s04.png",
     "price": 6500
   },
@@ -292,5 +292,299 @@
     "title": "Bara Bara Festival",
     "image": "s08.png",
     "price": 1200
+  },
+  {
+    "id": "c35",
+    "name": "Luffy",
+    "title": "Gomu Gomu no Gatling",
+    "image": "c35.png",
+    "price": 0
+  },
+  {
+    "id": "c36",
+    "name": "Luffy",
+    "title": "Headlong Rush",
+    "image": "c36.png",
+    "price": 0
+  },
+  {
+    "id": "c37",
+    "name": "Luffy",
+    "title": "Gomu Gomu no Kane",
+    "image": "c37.png",
+    "price": 0
+  },
+  {
+    "id": "c38",
+    "name": "Zoro",
+    "title": "Tora Gari",
+    "image": "c38.png",
+    "price": 0
+  },
+  {
+    "id": "c39",
+    "name": "Zoro",
+    "title": "Fighting Spirit",
+    "image": "c39.png",
+    "price": 0
+  },
+  {
+    "id": "c40",
+    "name": "Zoro",
+    "title": "Latent Strength",
+    "image": "c40.png",
+    "price": 0
+  },
+  {
+    "id": "c41",
+    "name": "Nami",
+    "title": "Assist",
+    "image": "c41.png",
+    "price": 0
+  },
+  {
+    "id": "c42",
+    "name": "Nami",
+    "title": "Money Lover",
+    "image": "c42.png",
+    "price": 0
+  },
+  {
+    "id": "c43",
+    "name": "Nami",
+    "title": "Skilled Performance",
+    "image": "c43.png",
+    "price": 0
+  },
+  {
+    "id": "c44",
+    "name": "Usopp",
+    "title": "Kayaku Boshi",
+    "image": "c44.png",
+    "price": 0
+  },
+  {
+    "id": "c45",
+    "name": "Usopp",
+    "title": "Big Lie",
+    "image": "c45.png",
+    "price": 0
+  },
+  {
+    "id": "c46",
+    "name": "Usopp's Weapon",
+    "title": "Pachinko",
+    "image": "c46.png",
+    "price": 0
+  },
+  {
+    "id": "c47",
+    "name": "Chouchou",
+    "title": "Shining Memories",
+    "image": "c47.png",
+    "price": 0
+  },
+  {
+    "id": "c48",
+    "name": "Yasopp",
+    "title": "Infallible",
+    "image": "c48.png",
+    "price": 0
+  },
+  {
+    "id": "c49",
+    "name": "Kaya",
+    "title": "Hope for the Future",
+    "image": "c49.png",
+    "price": 0
+  },
+  {
+    "id": "c50",
+    "name": "Merry",
+    "title": "Errand Boy",
+    "image": "c50.png",
+    "price": 0
+  },
+  {
+    "id": "c51",
+    "name": "Klahadore",
+    "title": "Cold-Hearted Butler",
+    "image": "c51.png",
+    "price": 0
+  },
+  {
+    "id": "c52",
+    "name": "Tamanegi",
+    "title": "Usopp Pirates",
+    "image": "c52.png",
+    "price": 0
+  },
+  {
+    "id": "c53",
+    "name": "Piiman",
+    "title": "Usopp Pirates",
+    "image": "c53.png",
+    "price": 0
+  },
+  {
+    "id": "c54",
+    "name": "Ninjin",
+    "title": "Usopp Pirates",
+    "image": "c54.png",
+    "price": 0
+  },
+  {
+    "id": "c55",
+    "name": "Buggy",
+    "title": "Knife-Wielding",
+    "image": "c55.png",
+    "price": 0
+  },
+  {
+    "id": "c56",
+    "name": "Buggy",
+    "title": "Roaring Laughter",
+    "image": "c56.png",
+    "price": 0
+  },
+  {
+    "id": "c57",
+    "name": "Mohji & Richie",
+    "title": "King of Beasts' 100 Blows",
+    "image": "c57.png",
+    "price": 0
+  },
+  {
+    "id": "c58",
+    "name": "Cabaji",
+    "title": "Kaji Oyaji",
+    "image": "c58.png",
+    "price": 0
+  },
+  {
+    "id": "c59",
+    "name": "Buggy's 3 Underlings",
+    "title": "Flattery",
+    "image": "c59.png",
+    "price": 0
+  },
+  {
+    "id": "c60",
+    "name": "Kuro",
+    "title": "Shakushi",
+    "image": "c60.png",
+    "price": 0
+  },
+  {
+    "id": "c61",
+    "name": "Kuro",
+    "title": "Nukiashi",
+    "image": "c61.png",
+    "price": 0
+  },
+  {
+    "id": "c62",
+    "name": "Jango",
+    "title": "Hypnotist",
+    "image": "c62.png",
+    "price": 0
+  },
+  {
+    "id": "c63",
+    "name": "Jango's Weapon",
+    "title": "Chakram",
+    "image": "c63.png",
+    "price": 0
+  },
+  {
+    "id": "c64",
+    "name": "Sham",
+    "title": "Neko Baba",
+    "image": "c64.png",
+    "price": 0
+  },
+  {
+    "id": "c65",
+    "name": "Buchi",
+    "title": "Cat the Funjatta",
+    "image": "c65.png",
+    "price": 0
+  },
+  {
+    "id": "c66",
+    "name": "Black Cat Pirates",
+    "title": "Sacrificial Pawn",
+    "image": "c66.png",
+    "price": 0
+  },
+  {
+    "id": "s09",
+    "name": "Luffy Pirates",
+    "title": "Kanpai!!",
+    "image": "s09.png",
+    "price": 0
+  },
+  {
+    "id": "s10",
+    "name": "Luffy",
+    "title": "Gomu Gomu no Tsuchi",
+    "image": "s10.png",
+    "price": 0
+  },
+  {
+    "id": "s11",
+    "name": "Zoro",
+    "title": "A Swordsman's Will",
+    "image": "s11.png",
+    "price": 0
+  },
+  {
+    "id": "s12",
+    "name": "Usopp",
+    "title": "Ambition",
+    "image": "s12.png",
+    "price": 0
+  },
+  {
+    "id": "s13",
+    "name": "Sanji",
+    "title": "Cook",
+    "image": "s13.png",
+    "price": 0
+  },
+  {
+    "id": "s14",
+    "name": "Buggy",
+    "title": "Buggy in a Pinch",
+    "image": "s14.png",
+    "price": 0
+  },
+  {
+    "id": "s15",
+    "name": "Kuro",
+    "title": "Careful Planning",
+    "image": "s15.png",
+    "price": 0
+  },
+  {
+    "id": "s16",
+    "name": "Jango",
+    "title": "Collective Hypnosis",
+    "image": "s16.png",
+    "price": 0
+  },
+  {
+    "id": "fp1",
+    "name": "Large Maelstrom",
+    "title": "",
+    "image": "fp1.png",
+    "price": 0
+  },
+  {
+    "id": "fp2",
+    "name": "Buggy Pirates Ship",
+    "title": "",
+    "image": "fp2.png",
+    "price": 0
   }
 ]
